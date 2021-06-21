@@ -22,6 +22,7 @@ func ValidateRequestLogin(context *gin.Context) {
 			//context.Writer.Header().Set("Content-Type", "application/json")
 			//context.Writer.Write(js)
 			apiResponse := &APIResponse{}
+			apiResponse.Context = context
 			apiResponse.SetCode(
 				API_ERR_CODE_REQUEST_PARAM_ERROR,
 				API_RETURN_CODE_ERROR,
