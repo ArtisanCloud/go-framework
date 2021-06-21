@@ -26,7 +26,7 @@ func ValidateRequestLogin(context *gin.Context) {
 			apiResponse.SetCode(
 				API_ERR_CODE_REQUEST_PARAM_ERROR,
 				API_RETURN_CODE_ERROR,
-				"", "").SetData(object.HashMap{
+				"", err.Error()).SetData(object.HashMap{
 				"message": err.Error(),
 			}).ThrowJSONResponse(context)
 		}
