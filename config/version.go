@@ -2,7 +2,7 @@ package config
 
 var APP_NAME string
 
-const APP_VERSION = "v1.0.3"
+const APP_VERSION = "{{version}}"
 
 func LoadVersion() {
 	APP_NAME = AppConfigure.Name + "-" + AppConfigure.Env
