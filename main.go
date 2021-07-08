@@ -1,10 +1,8 @@
 package main
 
 import (
-	service "github.com/ArtisanCloud/go-framework/app/services"
-	"github.com/ArtisanCloud/go-framework/cache"
+	"github.com/ArtisanCloud/go-framework/boostrap"
 	"github.com/ArtisanCloud/go-framework/config"
-	"github.com/ArtisanCloud/go-framework/database"
 	logger "github.com/ArtisanCloud/go-framework/loggerManager"
 	tester "github.com/ArtisanCloud/go-framework/tests"
 )
@@ -19,28 +17,8 @@ var Router *gin.Engine
 
 func main() {
 
-	// Initialize the global config
-	envConfigName := "environment"
-	dbConfigName := "database"
-	cacheConfigName := "cache"
-	logConfigName := "log"
-	config.LoadEnvConfig(nil, &envConfigName, nil)
-	config.LoadDatabaseConfig(nil, &dbConfigName, nil)
-	config.LoadCacheConfig(nil, &cacheConfigName, nil)
-	config.LoadVersion()
-	config.LoadLogConfig(nil, &logConfigName, nil)
-
-	// setup ssh key path
-	service.SetupSSHKeyPath(config.AppConfigure.SSH)
-
-	// Initialize the cache
-	_ = cache.SetupCache()
-
-	// Initialize the database
-	_ = database.SetupDatabase()
-
-	// Initialize the logger
-	_ = logger.SetupLog()
+	// init project
+	boostrap.InitProject()
 
 	// Initialize the Logger
 	tester.TestFun()
