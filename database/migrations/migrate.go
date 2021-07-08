@@ -26,10 +26,6 @@ func main() {
 	isForce = object.InArray("force", arrayArgs)
 
 	arrayTables := []interface{}{
-		&models.Notification{},
-		&models.Fission{},
-		&models.FissionLog{},
-		&models.Account{},
 		&models.User{},
 	}
 	err := migrate(arrayTables)
