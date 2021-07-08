@@ -35,6 +35,7 @@ func SetupDatabase() (err error) {
 	DBConnection, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Error),
 		//Logger: logger.Default.LogMode(logger.Info),
+		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	//DBConnection.Exec("SET search_path TO " + d.SearchPath)
 
