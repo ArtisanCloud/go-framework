@@ -24,6 +24,9 @@ type APIResponse struct {
 
 	Meta Meta        `json:"meta"`
 	Data interface{} `json:"data"`
+
+	Printer *message.Printer
+	locale string
 }
 
 func NewAPIResponse(ctx *gin.Context) (rs *APIResponse) {
@@ -32,6 +35,15 @@ func NewAPIResponse(ctx *gin.Context) (rs *APIResponse) {
 	}
 
 	ctx.Header("version", APP_VERSION)
+
+	// set locale
+	local := service.GetSessionLocale(ctx)
+	var p *message.Printer
+	if local == service.LOCALE_EN {
+		p = message.NewPrinter(language.English)
+	} else {
+		p = message.NewPrinter(language.Chinese)
+	}
 
 	rs = &APIResponse{
 		Context: ctx,
@@ -42,6 +54,9 @@ func NewAPIResponse(ctx *gin.Context) (rs *APIResponse) {
 			ResultMessage: "",
 		},
 		Data: nil,
+
+		Printer: p,
+		locale: local,
 	}
 	return rs
 }
@@ -129,19 +144,12 @@ func (rs *APIResponse) getJsonResponseBody() map[string]interface{} {
 		rsMsg = rs.Meta.ResultMessage
 	}
 
-	// set locale
-	local := service.GetSessionLocale(rs.Context)
-	var p *message.Printer
-	if local == service.LOCALE_EN {
-		p = message.NewPrinter(language.English)
-	} else {
-		p = message.NewPrinter(language.Chinese)
-	}
+
 	if rtMsg == "" {
-		rtMsg = p.Sprintf(fmt2.Sprintf("%d", rs.Meta.ReturnCode))
+		rtMsg = rs.Printer.Sprintf(fmt2.Sprintf("%d", rs.Meta.ReturnCode))
 	}
 	if rsMsg == "" {
-		rsMsg = p.Sprintf(fmt2.Sprintf("%d", rs.Meta.ResultCode))
+		rsMsg = rs.Printer.Sprintf(fmt2.Sprintf("%d", rs.Meta.ResultCode))
 	}
 	//fmt2.Printf("local:%s %d %s, %d %s", local, rs.Meta.ReturnCode, rtMsg, rs.Meta.ResultCode, rsMsg)
 
