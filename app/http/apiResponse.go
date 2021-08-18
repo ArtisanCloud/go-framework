@@ -195,7 +195,10 @@ func (rs *APIResponse) ResetResultCode() {
 /** Success Json Response */
 func (rs *APIResponse) Success(context *gin.Context, data interface{}) {
 	rs.ResetCodes()
-	rs.SetData(data)
+
+	if data != nil {
+		rs.SetData(data)
+	}
 
 	body := rs.getJsonResponseBody()
 	context.AbortWithStatusJSON(http.StatusOK, body)
