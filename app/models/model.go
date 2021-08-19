@@ -4,28 +4,92 @@ import (
 	"fmt"
 	"github.com/ArtisanCloud/go-libs/database"
 	"github.com/ArtisanCloud/go-libs/object"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/schema"
 	"math"
 	"reflect"
 	"sync"
+	"time"
 )
+
 
 type Model interface {
 	GetTableName(needFull bool) string
-	GetUUID() string
+	GetID() interface{}
+	GetPrimaryKey() string
+	GetForeignKey() string
 }
 
-const STATUS_DRAFT = "Draft"
-const STATUS_CANCELED = "Canceled"
+type MyModel struct {
+	ID   int    `gorm:"autoIncrement:true;unique; column:id; ->;<-:create" json:"-"`
+	UUID string `gorm:"primaryKey;autoIncrement:false;unique; column:uuid; ->;<-:create " json:"uuid" sql:"index"`
 
-const APPROVAL_STATUS_DRAFT = "Draft"
-const APPROVAL_STATUS_PENDING = "Pending"
-const APPROVAL_STATUS_APPROVED = "Approved"
-const APPROVAL_STATUS_REJECTED = "Rejected"
+	CreatedAt time.Time `gorm:"column:created_at; ->;<-:create " json:"createdAt"`
+	UpdatedAt time.Time `gorm:"column:updated_at" json:"updatedAt"`
+}
+
+type MyRelationship struct {
+	ID        int       `gorm:"autoIncrement:true;unique; column:id; ->;<-:create" json:"-"`
+	CreatedAt time.Time `gorm:"column:created_at; ->;<-:create " json:"createdAt"`
+	UpdatedAt time.Time `gorm:"column:updated_at" json:"updatedAt"`
+}
+
+
+const UNIQUE_ID = "uuid"
+
+const MODEL_STATUS_DRAFT int8 = 0
+const MODEL_STATUS_ACTIVE int8 = 1
+const MODEL_STATUS_CANCELED int8 = 2
+const MODEL_STATUS_PENDING int8 = 3
+const MODEL_STATUS_INACTIVE int8 = 4
+
+const APPROVAL_STATUS_DRAFT int8 = 0
+const APPROVAL_STATUS_PENDING int8 = 1
+const APPROVAL_STATUS_APPROVED int8 = 3
+const APPROVAL_STATUS_REJECTED int8 = 4
 
 var ArrayModelFields *object.HashMap = &object.HashMap{}
+
+func NewMyModel() *MyModel {
+	now := time.Now()
+	return &MyModel{
+		UUID:      uuid.NewString(),
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+}
+
+func NewMyRelationship() *MyRelationship {
+	now := time.Now()
+	return &MyRelationship{
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+}
+
+func (mdl *MyModel) GetID() interface{} {
+	return mdl.UUID
+}
+
+func (mdl *MyModel) GetPrimaryKey() string {
+	return "uuid"
+}
+func (mdl *MyModel) GetForeignKey() string {
+	return "model_uuid"
+}
+
+func (mdl *MyRelationship) GetID() interface{} {
+	return ""
+}
+
+func (mdl *MyRelationship) GetPrimaryKey() string {
+	return "id"
+}
+func (mdl *MyRelationship) GetForeignKey() string {
+	return "model_id"
+}
 
 
 /**
@@ -115,6 +179,15 @@ func AssociationRelationship(db *gorm.DB, conditions *gorm.DB, mdl interface{}, 
 	}
 
 	return tx.Association(relationship)
+}
+
+
+func ClearAssociation(db *gorm.DB, object Model, foreignKey string, pivot Model) error {
+	result := db.Exec("DELETE FROM "+pivot.GetTableName(true)+" WHERE "+foreignKey+"=?", object.GetID())
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
 
 func Paginate(page int, pageSize int) func(db *gorm.DB) *gorm.DB {
