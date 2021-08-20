@@ -212,7 +212,7 @@ func GetModelFields(model interface{}) (fields []string) {
 
 	// check if it has been loaded
 	modelType := reflect.TypeOf(model)
-	modelName := modelType.Name()
+	modelName := modelType.String()
 	if (*ArrayModelFields)[modelName] != nil {
 		return (*ArrayModelFields)[modelName].([]string)
 	}
