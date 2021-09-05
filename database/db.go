@@ -29,7 +29,6 @@ func SetupDatabase() (err error) {
 	dsn += " port=" + c.Port
 	dsn += " sslmode=" + d.SSLMode
 	dsn += " TimeZone=" + timezone
-	//dsn := "host=localhost user=root password=root dbname=taishan port=5432 sslmode=disable TimeZone=UTC"
 	//fmt.Printf("%s\r\n",dsn)
 
 	DBConnection, err = gorm.Open(postgres.Open(dsn), &gorm.Config{

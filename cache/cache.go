@@ -3,7 +3,7 @@ package cache
 import (
 	"github.com/ArtisanCloud/go-framework/config"
 	"github.com/ArtisanCloud/go-libs/cache"
-	"github.com/ArtisanCloud/go-libs/str"
+	"github.com/ArtisanCloud/go-libs/object"
 )
 
 var (
@@ -33,6 +33,6 @@ func SetupCache() (err error) {
 }
 
 func GetKeyPrefix() string {
-	strAppName := str.Snake(config.AppConfigure.Name, "_")
+	strAppName := object.Snake(config.AppConfigure.Name, "_")
 	return strAppName + "_database_" + strAppName + "_cache:"
 }

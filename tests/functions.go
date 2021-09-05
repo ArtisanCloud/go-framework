@@ -3,7 +3,6 @@ package tests
 import (
 	"fmt"
 	"github.com/ArtisanCloud/go-libs/object"
-	"github.com/ArtisanCloud/go-libs/str"
 	"reflect"
 )
 
@@ -14,7 +13,7 @@ func TestFun() {
 }
 
 func testStr() {
-	strCamel := str.Camel("sdf-sdfl-Edfd-")
+	strCamel := object.Camel("sdf-sdfl-Edfd-")
 	fmt.Printf("%v\r\n", strCamel)
 }
 
